@@ -1,66 +1,64 @@
 <html>
 	<head>
 		<title>Electrum server</title>
-	</head>
-<body>
-<h1>Electrum server</h1>
-
 		<script>
 			var loc = window.location, new_uri;
 			if (loc.protocol === "https:") {
-			    new_uri = "wss:";
+				new_uri = "wss:";
 			} else {
-			    new_uri = "ws:";
+				new_uri = "ws:";
 			}
+
 			new_uri += "//" + loc.host;
 			btc_uri = new_uri + loc.pathname + "/btc";
 			ltc_uri = new_uri + loc.pathname + "/ltc";
-
+	
 			const btcsocket = new WebSocket(btc_uri);
 			const ltcsocket = new WebSocket(ltc_uri);
-
+	
 			btcsocket.addEventListener('open', (event) => {
-							console.log("Opened BTC socket");
-							document.getElementById("btc_server_status").innerText = "Running";
-							btcsocket.send('{ "id": "ver", "method": "server.version" }');
-							btcsocket.send('{ "id": "headers", "method": "blockchain.headers.subscribe" }');
-						});
-
+				console.log("Opened BTC socket");
+				document.getElementById("btc_server_status").innerText = "Running";
+				btcsocket.send('{ "id": "ver", "method": "server.version" }');
+				btcsocket.send('{ "id": "headers", "method": "blockchain.headers.subscribe" }');
+			});
+	
 			ltcsocket.addEventListener('open', (event) => {
-							console.log("Opened LTC socket");
-							document.getElementById("ltc_server_status").innerText = "Running";
-							ltcsocket.send('{ "id": "ver", "method": "server.version" }');
-							ltcsocket.send('{ "id": "headers", "method": "blockchain.headers.subscribe" }');
-						});
-
+				console.log("Opened LTC socket");
+				document.getElementById("ltc_server_status").innerText = "Running";
+				ltcsocket.send('{ "id": "ver", "method": "server.version" }');
+				ltcsocket.send('{ "id": "headers", "method": "blockchain.headers.subscribe" }');
+			});
+	
 			btcsocket.addEventListener('message', (event) => {
-							data = JSON.parse(event.data);
-							console.log(data);
+				data = JSON.parse(event.data);
+				console.log(data);
 
-							if (data.id == "ver") {
-								console.log("Version: ", data.result[0]);
-								document.getElementById("btc_version").innerText = data.result[0];
-							}
+				if (data.id == "ver") {
+					console.log("Version: ", data.result[0]);
+					document.getElementById("btc_version").innerText = data.result[0];
+				}
 
-							if (data.id == "headers") {
-								console.log("Headers: ", data.result);
-								document.getElementById("btc_height").innerText = data.result['height'];
-							}
-							if (data.method == "blockchain.headers.subscribe") {
-								console.log("BTC New block: ", data.params);
-								document.getElementById("btc_height").innerText = data.params[0]['height'];
-							}
+				if (data.id == "headers") {
+					console.log("Headers: ", data.result);
+					document.getElementById("btc_height").innerText = data.result['height'];
+				}
+				if (data.method == "blockchain.headers.subscribe") {
+					console.log("BTC New block: ", data.params);
+					document.getElementById("btc_height").innerText = data.params[0]['height'];
+				}
 
-						});
+			});
+
 			ltcsocket.addEventListener('message', (event) => {
 							data = JSON.parse(event.data);
 							console.log(data);
-
+	
 							if (data.id == "ver") {
 								console.log("Version: ", data.result[0]);
 								document.getElementById("ltc_version").innerText = data.result[0];
 							}
-
+	
 							if (data.id == "headers") {
 								console.log("Headers: ", data.result);
 								document.getElementById("ltc_height").innerText = data.result['height'];
@@ -69,38 +67,41 @@
 								console.log("LTC New block: ", data.params);
 								document.getElementById("ltc_height").innerText = data.params[0]['height'];
 							}
-
-						});
-
+	
+			});
+	
 		</script>
+	</head>
 
-<table style="border: 1px solid black; float: left;">
-	<th colspan=2>Bitcoin</th>
-	<tr>
-		<td>Server status</td><td><span id="btc_server_status" />N/A</span></td>
-	</tr>
+	<body>
+		<h1>Electrum server</h1>
+		<table style="border: 1px solid black; float: left;">
+			<th colspan=2>Bitcoin</th>
+			<tr>
+				<td>Server status</td><td><span id="btc_server_status" />N/A</span></td>
+			</tr>
 
-	<tr>
-		<td>Version</td><td><span id="btc_version" />N/A</span></td>
-	</tr>
-	<tr>
-		<td>Height</td><td><span id="btc_height" />N/A</span></td>
-	</tr>
-</table>
+			<tr>
+				<td>Version</td><td><span id="btc_version" />N/A</span></td>
+			</tr>
+			<tr>
+				<td>Height</td><td><span id="btc_height" />N/A</span></td>
+			</tr>
+		</table>
 
-<table style="border: 1px solid black;">
-	<th colspan=2>Litecoin</th>
-	<tr>
-		<td>Server status</td><td><span id="ltc_server_status" />N/A</span></td>
-	</tr>
+		<table style="border: 1px solid black;">
+			<th colspan=2>Litecoin</th>
+			<tr>
+				<td>Server status</td><td><span id="ltc_server_status" />N/A</span></td>
+			</tr>
 
-	<tr>
-		<td>Version</td><td><span id="ltc_version" />N/A</span></td>
-	</tr>
-	<tr>
-		<td>Height</td><td><span id="ltc_height" />N/A</span></td>
-	</tr>
-</table>
-<br />
-</body>
+			<tr>
+				<td>Version</td><td><span id="ltc_version" />N/A</span></td>
+			</tr>
+			<tr>
+				<td>Height</td><td><span id="ltc_height" />N/A</span></td>
+			</tr>
+		</table>
+		<br />
+	</body>
 </html>
